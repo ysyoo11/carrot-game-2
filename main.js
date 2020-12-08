@@ -25,6 +25,33 @@ const startGame = () => {
   showTimerAndScore();
   startGameTimer();
   hidePopUp();
+  letBugsMove();
+};
+
+const letBugsMove = () => {
+  const bugs = document.querySelectorAll(".bug");
+  const getRandomX = (width) => {
+    return Math.random() * width;
+  };
+  const getRandomDuration = (duration) => {
+    return Math.random() * duration + 3000;
+  };
+  for (let i = 0; i < bugs.length; i++) {
+    let aBug = bugs[i];
+    let randomX = getRandomX(200);
+    let randomDuration = getRandomDuration(3000);
+    aBug.style.overflow = "hidden";
+    aBug.animate(
+      [
+        { transfrom: "translateX(0px)" },
+        { transform: `translateX(${randomX}px)` },
+        { transfrom: "translateX(0px)" },
+        // { transform: `translateX(-${randomX}px)` },
+        // { transfrom: "translateX(0px)" },
+      ],
+      { duration: randomDuration, iterations: Infinity }
+    );
+  }
 };
 
 const stopGame = () => {
@@ -152,8 +179,6 @@ const addItem = (className, count, imgPath) => {
 const randomNumber = (min, max) => {
   return Math.random() * (max - min) + min;
 };
-
-initGame();
 
 gameBtn.addEventListener("click", () => {
   if (started) {
