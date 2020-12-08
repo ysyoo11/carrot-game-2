@@ -46,10 +46,10 @@ header {
 
 .game__timer {
   display: block;
-  width: 100px;
+  width: 150px;
+  height: 46px;
   margin: auto;
   margin-top: 8px;
-  padding: 0 20px;
   background-color: white;
   border-radius: 10px;
   font-size: 32px;

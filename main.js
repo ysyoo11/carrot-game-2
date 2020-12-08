@@ -3,7 +3,7 @@
 const CARROT_SIZE = 80;
 const CARROT_COUNT = 10;
 const BUG_COUNT = 7;
-const GAME_DURATION_SEC = 5;
+const GAME_DURATION_SEC = 10;
 
 const field = document.querySelector(".game__field");
 const fieldRect = field.getBoundingClientRect();
@@ -18,14 +18,6 @@ let started = false;
 let score = 0;
 let timer = undefined;
 
-gameBtn.addEventListener("click", () => {
-  if (started) {
-    stopGame();
-  } else {
-    startGame();
-  }
-});
-
 const startGame = () => {
   started = true;
   initGame();
@@ -34,8 +26,6 @@ const startGame = () => {
   startGameTimer();
   hidePopUp();
 };
-
-retryBtn.addEventListener("click", startGame);
 
 const stopGame = () => {
   started = false;
@@ -74,6 +64,7 @@ const startGameTimer = () => {
   updateTimerText(remainingTimeSec);
   timer = setInterval(() => {
     if (remainingTimeSec <= 0) {
+      showTimeoutText();
       clearInterval(timer);
       finishGame(score === CARROT_COUNT);
       return;
@@ -82,13 +73,20 @@ const startGameTimer = () => {
   }, 1000);
 };
 
+const showTimeoutText = () => {
+  timerIndicator.innerHTML = "Timeout";
+  timerIndicator.style.textAlign = "center";
+};
+
 const updateTimerText = (time) => {
   const minute = Math.floor(time / 60);
   const second = time % 60;
   if (second < 10) {
     timerIndicator.innerHTML = `0${minute}:0${second}`;
-  } else {
+  } else if (0 < second < 10) {
     timerIndicator.innerHTML = `0${minute}:${second}`;
+  } else if (second <= 0) {
+    timerIndicator.innerHTML = `Timeout`;
   }
 };
 
@@ -99,12 +97,36 @@ const finishGame = (win) => {
   showPopUpWithText(win ? "YOU WIN ✨" : "YOU LOST 🤡");
 };
 
+const onFieldClick = (e) => {
+  if (!started) {
+    return;
+  }
+  const target = e.target;
+  if (target.matches(".carrot")) {
+    target.remove();
+    score++;
+    updateScoreBoard();
+    if (score === CARROT_COUNT) {
+      finishGame(true);
+    }
+  } else if (target.matches(".bug")) {
+    finishGame(false);
+  }
+};
+
+const updateScoreBoard = () => {
+  gameScore.innerHTML = CARROT_COUNT - score;
+};
+
 const stopGameTimer = () => {
   clearInterval(timer);
 };
 
 const initGame = () => {
+  score = 0;
   field.innerHTML = "";
+  gameScore.innerHTML = CARROT_COUNT;
+  // Add carrots and bugs on the field
   addItem("carrot", CARROT_COUNT, "img/carrot.png");
   addItem("bug", BUG_COUNT, "img/bug.png");
 };
@@ -132,3 +154,16 @@ const randomNumber = (min, max) => {
 };
 
 initGame();
+
+gameBtn.addEventListener("click", () => {
+  if (started) {
+    stopGame();
+  } else {
+    startGame();
+  }
+});
+
+retryBtn.addEventListener("click", startGame);
+
+// 이벤트 위임 Event delegation
+field.addEventListener("click", onFieldClick);
