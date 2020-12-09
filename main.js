@@ -1,18 +1,26 @@
 "use strict";
 
-const CARROT_SIZE = 80;
+const CARROT_SIZE = 90;
 const CARROT_COUNT = 10;
 const BUG_COUNT = 7;
-const GAME_DURATION_SEC = 10;
+const GAME_DURATION_SEC = 15;
 
 const field = document.querySelector(".game__field");
 const fieldRect = field.getBoundingClientRect();
+console.log(fieldRect.width);
 const gameBtn = document.querySelector(".game__button");
 const gameScore = document.querySelector(".game__score");
 const timerIndicator = document.querySelector(".game__timer");
+
 const popUp = document.querySelector(".pop-up");
 const popUpText = popUp.querySelector(".pop-up__message");
 const retryBtn = document.querySelector(".pop-up__retry");
+
+const bgSound = new Audio("./sound/bg.mp3");
+const bugSound = new Audio("./sound/bug_pull.mp3");
+const carrotSound = new Audio("./sound/carrot_pull.mp3");
+const winSound = new Audio("./sound/game_win.mp3");
+const alertSound = new Audio("./sound/alert.wav");
 
 let started = false;
 let score = 0;
@@ -26,6 +34,7 @@ const startGame = () => {
   startGameTimer();
   hidePopUp();
   letBugsMove();
+  playSound(bgSound);
 };
 
 const letBugsMove = () => {
@@ -34,20 +43,18 @@ const letBugsMove = () => {
     return Math.random() * width;
   };
   const getRandomDuration = (duration) => {
-    return Math.random() * duration + 3000;
+    return Math.random() * duration + 2000;
   };
   for (let i = 0; i < bugs.length; i++) {
     let aBug = bugs[i];
-    let randomX = getRandomX(200);
-    let randomDuration = getRandomDuration(3000);
+    let randomX = getRandomX(300);
+    let randomDuration = getRandomDuration(1000);
     aBug.style.overflow = "hidden";
     aBug.animate(
       [
         { transfrom: "translateX(0px)" },
         { transform: `translateX(${randomX}px)` },
         { transfrom: "translateX(0px)" },
-        // { transform: `translateX(-${randomX}px)` },
-        // { transfrom: "translateX(0px)" },
       ],
       { duration: randomDuration, iterations: Infinity }
     );
@@ -58,6 +65,7 @@ const stopGame = () => {
   started = false;
   stopGameTimer();
   hideGameButton();
+  playSound(alertSound);
   showPopUpWithText("Restart❓");
 };
 
@@ -121,6 +129,12 @@ const finishGame = (win) => {
   started = false;
   stopGameTimer();
   hideGameButton();
+  if (win) {
+    playSound(winSound);
+  } else {
+    playSound(bugSound);
+  }
+  stopSound(bgSound);
   showPopUpWithText(win ? "YOU WIN ✨" : "YOU LOST 🤡");
 };
 
@@ -133,6 +147,7 @@ const onFieldClick = (e) => {
     target.remove();
     score++;
     updateScoreBoard();
+    playSound(carrotSound);
     if (score === CARROT_COUNT) {
       finishGame(true);
     }
@@ -180,9 +195,17 @@ const randomNumber = (min, max) => {
   return Math.random() * (max - min) + min;
 };
 
+const playSound = (sound) => {
+  sound.currentTime = 0;
+  sound.play();
+};
+
+const stopSound = (sound) => sound.pause();
+
 gameBtn.addEventListener("click", () => {
   if (started) {
     stopGame();
+    stopSound(bgSound);
   } else {
     startGame();
   }
