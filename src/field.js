@@ -1,6 +1,7 @@
 "use strict";
 
-const carrotSound = new Audio("./sound/carrot_pull.mp3");
+import * as sound from "./sound.js";
+
 const CARROT_SIZE = 90;
 
 export default class Field {
@@ -44,7 +45,7 @@ export default class Field {
     const target = e.target;
     if (target.matches(".carrot")) {
       target.remove();
-      playSound(carrotSound);
+      sound.playCarrotSound();
       this.onItemClick && this.onItemClick("carrot");
     } else if (target.matches(".bug")) {
       this.onItemClick && this.onItemClick("bug");
@@ -53,8 +54,3 @@ export default class Field {
 }
 
 const randomNumber = (min, max) => Math.random() * (max - min) + min;
-
-const playSound = (sound) => {
-  sound.currentTime = 0;
-  sound.play();
-};

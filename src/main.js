@@ -2,6 +2,7 @@
 
 import PopUp from "./popup.js";
 import Field from "./field.js";
+import * as sound from "./sound.js";
 
 const CARROT_COUNT = 10;
 const BUG_COUNT = 7;
@@ -10,12 +11,6 @@ const GAME_DURATION_SEC = 15;
 const gameBtn = document.querySelector(".game__button");
 const gameScore = document.querySelector(".game__score");
 const timerIndicator = document.querySelector(".game__timer");
-
-const bgSound = new Audio("./sound/bg.mp3");
-const bugSound = new Audio("./sound/bug_pull.mp3");
-const carrotSound = new Audio("./sound/carrot_pull.mp3");
-const winSound = new Audio("./sound/game_win.mp3");
-const alertSound = new Audio("./sound/alert.wav");
 
 let started = false;
 let score = 0;
@@ -49,7 +44,7 @@ const startGame = () => {
   showTimerAndScore();
   startGameTimer();
   letBugsMove();
-  playSound(bgSound);
+  sound.playBgSound();
 };
 
 const letBugsMove = () => {
@@ -80,7 +75,7 @@ const stopGame = () => {
   started = false;
   stopGameTimer();
   hideGameButton();
-  playSound(alertSound);
+  sound.playAlertSound();
   gameFinishBanner.showWithText("Restart❓");
 };
 
@@ -136,11 +131,11 @@ const finishGame = (win) => {
   stopGameTimer();
   hideGameButton();
   if (win) {
-    playSound(winSound);
+    sound.playWinSound();
   } else {
-    playSound(bugSound);
+    sound.playBugSound();
   }
-  stopSound(bgSound);
+  sound.stopBgSound();
   gameFinishBanner.showWithText(win ? "YOU WIN ✨" : "YOU LOST 🤡");
 };
 
@@ -158,21 +153,11 @@ const initGame = () => {
   gameField.init();
 };
 
-const stopSound = (sound) => sound.pause();
-
 gameBtn.addEventListener("click", () => {
   if (started) {
     stopGame();
-    stopSound(bgSound);
+    sound.stopBgSound();
   } else {
     startGame();
   }
 });
-
-function playSound(sound) {
-  sound.currentTime = 0;
-  sound.play();
-}
-
-// 이벤트 위임 Event delegation
-// field.addEventListener("click", onFieldClick);
