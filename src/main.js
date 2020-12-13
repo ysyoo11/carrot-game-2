@@ -20,9 +20,9 @@ const gameFinishBanner = new PopUp();
 gameFinishBanner.setClickListener(() => startGame());
 
 const gameField = new Field(CARROT_COUNT, BUG_COUNT);
-gameField.setClickListener(() => onFieldClick());
+gameField.setClickListener(onItemClick);
 
-const onFieldClick = (item) => {
+function onItemClick(item) {
   if (!started) {
     return;
   }
@@ -35,7 +35,7 @@ const onFieldClick = (item) => {
   } else if (item === "bug") {
     finishGame(false);
   }
-};
+}
 
 const startGame = () => {
   started = true;
