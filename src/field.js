@@ -43,6 +43,30 @@ export default class Field {
     }
   };
 
+  letBugsMove() {
+    const bugs = document.querySelectorAll(".bug");
+    const getRandomX = (width) => {
+      return Math.random() * width;
+    };
+    const getRandomDuration = (duration) => {
+      return Math.random() * duration + 2000;
+    };
+    for (let i = 0; i < bugs.length; i++) {
+      let aBug = bugs[i];
+      let randomX = getRandomX(300);
+      let randomDuration = getRandomDuration(1000);
+      aBug.style.overflow = "hidden";
+      aBug.animate(
+        [
+          { transfrom: "translateX(0px)" },
+          { transform: `translateX(${randomX}px)` },
+          { transfrom: "translateX(0px)" },
+        ],
+        { duration: randomDuration, iterations: Infinity }
+      );
+    }
+  }
+
   onClick(e) {
     const target = e.target;
     if (target.matches(".carrot")) {
